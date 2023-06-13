@@ -21,9 +21,9 @@ public class BlogPostService {
     @Autowired
     private BlogPostRepository blogPostRepository;
 
-    public void createNewBlogPost(String request) throws JsonProcessingException {
+    public void createNewBlogPost(String content) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        BlogPostRequest blogPostRequest = objectMapper.readValue(request, BlogPostRequest.class);
+        BlogPostRequest blogPostRequest = objectMapper.readValue(content, BlogPostRequest.class);
 
         //TODO: add validation for user to exist
         BlogPost newBlogPost = new BlogPost(blogPostRequest.title(), LocalDateTime.now(),
