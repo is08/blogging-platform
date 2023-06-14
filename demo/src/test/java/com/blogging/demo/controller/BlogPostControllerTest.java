@@ -98,4 +98,54 @@ class BlogPostControllerTest {
         Assertions.assertEquals("No blog post exists!", response.getBody());
         verify(blogPostService, times(1)).getByTitle(title);
     }
+
+    @Test
+    void shouldReturnResponseEntityWhenUpdateIsSuccessful() throws JsonProcessingException {
+        Integer id = 1;
+        String content = "Content";
+        doNothing().when(blogPostService).updateBlog(id, content);
+
+        ResponseEntity<String> response = blogPostController.update(id, content);
+
+        Assertions.assertEquals("Updated!", response.getBody());
+        verify(blogPostService, times(1)).updateBlog(id, content);
+    }
+
+    @Test
+    void shouldReturnResponseEntityWhenUpdateIsUnsuccessful() throws JsonProcessingException {
+        Integer id = 1;
+        String content = "Content";
+        NoBlogPostsExistException exception = mock(NoBlogPostsExistException.class);
+        when(exception.getMessage()).thenReturn("No blog post exists!");
+        doThrow(exception).when(blogPostService).updateBlog(id, content);
+
+        ResponseEntity<String> response = blogPostController.update(id, content);
+
+        Assertions.assertEquals("No blog post exists!", response.getBody());
+        verify(blogPostService, times(1)).updateBlog(id, content);
+    }
+
+    @Test
+    void shouldReturnResponseEntityWhenDeleteIsSuccessful() throws JsonProcessingException {
+        Integer id = 1;
+        doNothing().when(blogPostService).deleteById(id);
+
+        ResponseEntity<String> response = blogPostController.delete(id);
+
+        Assertions.assertEquals("Deleted!", response.getBody());
+        verify(blogPostService, times(1)).deleteById(id);
+    }
+
+    @Test
+    void shouldReturnResponseEntityWhenDeleteIsUnsuccessful() throws JsonProcessingException {
+        Integer id = 1;
+        NoBlogPostsExistException exception = mock(NoBlogPostsExistException.class);
+        when(exception.getMessage()).thenReturn("No blog post exists!");
+        doThrow(exception).when(blogPostService).deleteById(id);
+
+        ResponseEntity<String> response = blogPostController.delete(id);
+
+        Assertions.assertEquals("No blog post exists!", response.getBody());
+        verify(blogPostService, times(1)).deleteById(id);
+    }
 }
