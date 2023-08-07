@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -73,6 +74,46 @@ public class BlogPostServiceTest {
 
         assertThrows(NoBlogPostsExistException.class,
                 () -> blogPostService.getByTitle(title),
+                "No blog post exists!");
+    }
+
+    @Test
+    void shouldUpdateBlogIfBlogIsPresent() throws JsonProcessingException {
+        BlogPost blogPost = mock(BlogPost.class);
+        when(blogPostRepository.findById(1)).thenReturn(Optional.of(blogPost));
+        String content = "{\"title\":\"updated title\",\"content\":\"this is the updated content\"}";
+
+        blogPostService.updateBlog(1, content);
+
+        verify(blogPostRepository, times(1)).save(blogPost);
+    }
+
+    @Test
+    void shouldThrowExceptionIfBlogIsNotPresent() throws JsonProcessingException {
+        when(blogPostRepository.findById(1)).thenReturn(Optional.empty());
+        String content = "{\"title\":\"updated title\",\"content\":\"this is the updated content\"}";
+
+        assertThrows(NoBlogPostsExistException.class,
+                () -> blogPostService.updateBlog(1, content),
+                "No blog post exists!");
+    }
+
+    @Test
+    void shouldDeleteBlogPostIfPresent() {
+        BlogPost blogPost = mock(BlogPost.class);
+        when(blogPostRepository.findById(1)).thenReturn(Optional.of(blogPost));
+
+        blogPostService.deleteById(1);
+
+        verify(blogPostRepository, times(1)).deleteById(1);
+    }
+
+    @Test
+    void shouldThrowExceptionIfBlogIsNotPresentWhileDeletion() {
+        when(blogPostRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThrows(NoBlogPostsExistException.class,
+                () -> blogPostService.deleteById(1),
                 "No blog post exists!");
     }
 }
